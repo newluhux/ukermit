@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <libgen.h>
 #include <fcntl.h>
 
 #define CHAR_SOH 0x1
@@ -333,7 +334,7 @@ int main(int argc, char *argv[])
 	ks.seq = kseqadd(ks.seq, 1);
 
 	ks.type = KTYPE_FHDR;
-	if (kmkpkt(&ks, (uint8_t *) filename, strlen(filename))
+	if (kmkpkt(&ks, (uint8_t *) basename(filename), strlen(filename))
 	    != strlen(filename)) {
 		fprintf(stderr, "filename too long\n");
 		exit(EXIT_FAILURE);
