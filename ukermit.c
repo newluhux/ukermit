@@ -160,7 +160,6 @@ int ksend(struct kstate *k)
 {
 	uint8_t len;
 	len = strnlen((char *)k->txbuf, kunchar(k->param[KPARAM_MAXLEN]));
-	fprintf(stderr, "tx: send %d bytes to remote\n", len);
 	return write(STDOUT_FILENO, k->txbuf, len);
 }
 
@@ -182,7 +181,6 @@ int krecv(struct kstate *k)
 	temp = kunchar(rxbuf[KHDR_LEN]);
 	/* min pkt layout is [MARK] [LEN] [SEQ] [TYPE] [CHECK] */
 	if (temp > (kunchar(k->param[KPARAM_MAXLEN]))) {
-		fprintf(stderr, "rx: bad len\n");
 		return -1;
 	}
 	rxbuf_len++;
@@ -229,12 +227,10 @@ void kloop(struct kstate *k)
 		}
 		temp = k->rxbuf[KHDR_TYPE];
 		if (temp == KTYPE_ACK) {
-			fprintf(stderr, "local: recv ack\n");
 			break;
 		}
 		switch (temp) {
 		case KTYPE_NACK:
-			fprintf(stderr, "local: recv nack\n");
 			break;
 		case KTYPE_ERROR:
 			fprintf(stderr, "remote: %s\n", &rxbuf[KHDR_SIZE]);
@@ -367,10 +363,10 @@ int main(int argc, char *argv[])
 			kloop(&ks);
 			bufused += temp;
 			readed += temp;
-			fprintf(stderr, "progress: %ld/%ld\n", readed,
-				filesize);
 			ks.seq = kseqadd(ks.seq, 1);
 		}
+		fprintf(stderr, "progress: %ld/%ld\n", readed,
+			filesize);
 	}
 	fprintf(stderr, "local: file send done\n");
 
